@@ -1,6 +1,7 @@
 // menu_screen.dart
 import 'package:flutter/material.dart';
 import 'game_screen.dart';
+import '../models/game_settings.dart';
 import '../services/game_controller.dart';
 import '../services/sound_manager.dart';
 
@@ -15,19 +16,11 @@ class MenuScreenState extends State<MenuScreen> {
   String _selectedMode = 'Choisir le Mode de Jeu';
   String _selectedDifficulty = 'Choisir une Difficulté';
 
-  final SoundManager _soundManager = SoundManager();
-
-  @override
-  void initState() {
-    super.initState();
-    _soundManager.loadSoundsFromJson(); // Charger les sons au démarrage
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Menu Principal'),
+        title: const Text('Menu Principal'),
       ),
       body: Center(
         child: Column(
@@ -39,29 +32,36 @@ class MenuScreenState extends State<MenuScreen> {
               },
               child: Text(_selectedMode),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 _showDifficultySelection(context);
               },
               child: Text(_selectedDifficulty),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                final soundManager = SoundManager();
+                final gameController = GameController(soundManager);
+
+                final gameSettings = GameSettings(
+                  mode: _selectedMode,
+                  difficulty: _selectedDifficulty,
+                  selectedColors: {}, // Les couleurs seront définies dans game_screen.dart
+                );
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) {
-                      final gameController = GameController(_soundManager);
-                      gameController.setMode(_selectedMode);
-                      gameController.setDifficulty(_selectedDifficulty);
-                      return GameScreen(gameController: gameController);
-                    },
+                    builder: (context) => GameScreen(
+                      gameSettings: gameSettings,
+                      gameController: gameController,
+                    ),
                   ),
                 );
               },
-              child: Text('Commencer une Partie'),
+              child: const Text('Commencer une Partie'),
             ),
           ],
         ),
@@ -74,12 +74,12 @@ class MenuScreenState extends State<MenuScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Sélectionnez un Mode de Jeu'),
+          title: const Text('Sélectionnez un Mode de Jeu'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Découverte'),
+                title: const Text('Découverte'),
                 onTap: () {
                   setState(() {
                     _selectedMode = 'Découverte';
@@ -88,7 +88,7 @@ class MenuScreenState extends State<MenuScreen> {
                 },
               ),
               ListTile(
-                title: Text('Cri des Animaux'),
+                title: const Text('Cri des Animaux'),
                 onTap: () {
                   setState(() {
                     _selectedMode = 'Cri des Animaux';
@@ -97,7 +97,7 @@ class MenuScreenState extends State<MenuScreen> {
                 },
               ),
               ListTile(
-                title: Text('Bruits Familiers'),
+                title: const Text('Bruits Familiers'),
                 onTap: () {
                   setState(() {
                     _selectedMode = 'Bruits Familiers';
@@ -117,12 +117,12 @@ class MenuScreenState extends State<MenuScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Sélectionnez une Difficulté'),
+          title: const Text('Sélectionnez une Difficulté'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Facile'),
+                title: const Text('Facile'),
                 onTap: () {
                   setState(() {
                     _selectedDifficulty = 'Facile';
@@ -131,7 +131,7 @@ class MenuScreenState extends State<MenuScreen> {
                 },
               ),
               ListTile(
-                title: Text('Rapide'),
+                title: const Text('Rapide'),
                 onTap: () {
                   setState(() {
                     _selectedDifficulty = 'Rapide';
@@ -140,7 +140,7 @@ class MenuScreenState extends State<MenuScreen> {
                 },
               ),
               ListTile(
-                title: Text('Très Rapide'),
+                title: const Text('Très Rapide'),
                 onTap: () {
                   setState(() {
                     _selectedDifficulty = 'Très Rapide';
